@@ -54,12 +54,17 @@
 
       <!-- Images -->
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Images (URLs)</mat-label>
+        <mat-label>Images (URLs) *</mat-label>
         <textarea matInput formControlName="images" 
-                  placeholder="Enter image URLs separated by commas" 
+                  placeholder="Enter image URLs separated by commas (required)" 
                   rows="2"></textarea>
         <mat-icon matSuffix>image</mat-icon>
-        <mat-hint>Enter multiple image URLs separated by commas</mat-hint>
+        <mat-hint *ngIf="!images?.hasError('required') && !images?.hasError('noImages') && !images?.hasError('invalidUrl')">
+          Enter multiple image URLs separated by commas
+        </mat-hint>
+        <mat-error *ngIf="images?.hasError('required')">At least one image URL is required</mat-error>
+        <mat-error *ngIf="images?.hasError('noImages')">Please provide at least one valid image URL</mat-error>
+        <mat-error *ngIf="images?.hasError('invalidUrl')">Please enter valid image URLs</mat-error>
       </mat-form-field>
     </form>
   </mat-dialog-content>

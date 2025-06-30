@@ -57,7 +57,7 @@ export class ProductDialogComponent implements OnInit {
       price: ['', [Validators.required, Validators.min(0)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       categoryId: ['', Validators.required],
-      images: ['']
+      images: ['', [Validators.required, this.imageUrlValidator]]
     });
   }
 
@@ -98,12 +98,22 @@ export class ProductDialogComponent implements OnInit {
       this.submitting.set(true);
       
       const formValue = this.productForm.value;
+      const imageUrls = formValue.images ? 
+        formValue.images.split(',').map((img: string) => img.trim()).filter((url: string) => url.length > 0) : 
+        [];
+      
+      // Double-check that we have valid images
+      if (imageUrls.length === 0) {
+        this.submitting.set(false);
+        return;
+      }
+      
       const productData = {
         title: formValue.title,
         price: Number(formValue.price),
         description: formValue.description,
         categoryId: Number(formValue.categoryId),
-        images: formValue.images ? formValue.images.split(',').map((img: string) => img.trim()) : []
+        images: imageUrls
       };
 
       if (this.data.isEdit && this.data.product) {
@@ -111,6 +121,9 @@ export class ProductDialogComponent implements OnInit {
       } else {
         this.createProduct(productData);
       }
+    } else {
+      // Mark all fields as touched to show validation errors
+      this.productForm.markAllAsTouched();
     }
   }
 
@@ -144,8 +157,33 @@ export class ProductDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  // Custom validator for image URLs
+  imageUrlValidator(control: any) {
+    if (!control.value) {
+      return null; // Let required validator handle empty values
+    }
+
+    const imageUrls = control.value.split(',').map((url: string) => url.trim()).filter((url: string) => url.length > 0);
+    
+    if (imageUrls.length === 0) {
+      return { noImages: true };
+    }
+
+    // Basic URL validation
+    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    
+    for (const url of imageUrls) {
+      if (!urlPattern.test(url)) {
+        return { invalidUrl: true };
+      }
+    }
+
+    return null; // Valid
+  }
+
   get title() { return this.productForm.get('title'); }
   get price() { return this.productForm.get('price'); }
   get description() { return this.productForm.get('description'); }
   get categoryId() { return this.productForm.get('categoryId'); }
+  get images() { return this.productForm.get('images'); }
 } 
