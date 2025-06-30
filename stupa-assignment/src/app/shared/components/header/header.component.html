@@ -1,0 +1,129 @@
+<mat-toolbar class="header">
+  <div class="header-container">
+    <div class="logo-section">
+      <a routerLink="/" class="logo">
+        <mat-icon>shopping_bag</mat-icon>
+        <span>E-Commerce</span>
+      </a>
+    </div>
+
+    <nav class="nav-section">
+      <a mat-button routerLink="/products" routerLinkActive="active">Shop Products</a>
+      <a mat-button routerLink="/categories" routerLinkActive="active">Shop By Categories</a>
+      <!-- Admin Navigation -->
+      <a *ngIf="isAdmin$ | async" mat-button routerLink="/admin" routerLinkActive="active" class="admin-nav">
+        <mat-icon>admin_panel_settings</mat-icon>
+        Admin
+      </a>
+    </nav>
+
+    <div class="actions-section">
+      <!-- Theme Toggle Button -->
+      <button mat-icon-button 
+              (click)="toggleTheme()" 
+              class="theme-toggle-btn"
+              [matTooltip]="isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+              matTooltipPosition="below">
+        <mat-icon>{{isDarkMode() ? 'light_mode' : 'dark_mode'}}</mat-icon>
+      </button>
+
+      <!-- Cart Dropdown Button -->
+      <button mat-icon-button [matMenuTriggerFor]="cartMenu" #cartMenuTrigger="matMenuTrigger" class="cart-button">
+        <mat-icon [matBadge]="cartItemsCount$ | async" matBadgeColor="warn">shopping_cart</mat-icon>
+      </button>
+      
+      <!-- Cart Dropdown Menu -->
+      <mat-menu #cartMenu="matMenu" class="cart-dropdown" xPosition="before">
+        <div class="cart-dropdown-content" (click)="$event.stopPropagation()">
+          <div class="cart-header">
+            <mat-icon>shopping_cart</mat-icon>
+            <span class="cart-title">Shopping Cart</span>
+          </div>
+          
+          <div *ngIf="(cartItems$ | async)?.length === 0" class="empty-cart">
+            <mat-icon>shopping_cart</mat-icon>
+            <p>Your cart is empty</p>
+            <button mat-button routerLink="/products" color="primary">Start Shopping</button>
+          </div>
+          
+          <div *ngIf="(cartItems$ | async)?.length! > 0" class="cart-items">
+            <div *ngFor="let item of displayCartItems$ | async" class="cart-item">
+              <img [src]="item.product.images[0]" 
+                   [alt]="item.product.title" 
+                   (error)="onImageError($event)"
+                   class="item-image">
+              <div class="item-details">
+                <span class="item-name">{{item.product.title}}</span>
+                <span class="item-info">${{item.product.price}} × {{item.quantity}}</span>
+              </div>
+            </div>
+            
+            <div *ngIf="hasMoreItems$ | async" class="more-items">
+              <span class="more-text">+{{remainingItemsCount$ | async}} more items</span>
+            </div>
+            
+            <mat-divider></mat-divider>
+            
+            <div class="cart-actions">
+              <button mat-raised-button color="primary" (click)="viewCart()" class="show-more-btn">
+                {{(hasMoreItems$ | async) ? 'Show More' : 'View Cart'}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-menu>
+
+      <!-- User Menu -->
+      <div *ngIf="currentUser$ | async as user; else loginButton">
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+          <mat-icon>person</mat-icon>
+          <span>{{ user.name }}</span>
+          <span class="user-role" [class]="user.role.toLowerCase()">{{user.role}}</span>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon>account_circle</mat-icon>
+            <span>Profile</span>
+          </button>
+          
+          <!-- Customer-specific menu items -->
+          <div *ngIf="isCustomer$ | async">
+            <button mat-menu-item routerLink="/orders">
+              <mat-icon>receipt</mat-icon>
+              <span>My Orders</span>
+            </button>
+            <button mat-menu-item routerLink="/cart">
+              <mat-icon>shopping_cart</mat-icon>
+              <span>Shopping Cart</span>
+            </button>
+          </div>
+          
+          <!-- Admin-specific menu items -->
+          <div *ngIf="isAdmin$ | async">
+            <button mat-menu-item routerLink="/admin">
+              <mat-icon>dashboard</mat-icon>
+              <span>Admin Dashboard</span>
+            </button>
+            <button mat-menu-item (click)="navigateToAdmin()">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <span>Manage System</span>
+            </button>
+          </div>
+          
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+
+      <ng-template #loginButton>
+        <a mat-button routerLink="/auth/login" class="login-button">
+          <mat-icon>login</mat-icon>
+          <span>Login</span>
+        </a>
+      </ng-template>
+    </div>
+  </div>
+</mat-toolbar> 

@@ -1,0 +1,78 @@
+<div class="user-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon>{{ data.isEdit ? 'edit' : 'person_add' }}</mat-icon>
+    {{ data.isEdit ? 'Edit User' : 'Add New User' }}
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="userForm" class="user-form">
+      <!-- User Name -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Full Name</mat-label>
+        <input matInput formControlName="name" placeholder="Enter full name">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="name?.hasError('required')">Name is required</mat-error>
+        <mat-error *ngIf="name?.hasError('minlength')">Name must be at least 2 characters</mat-error>
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter email address">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="email?.hasError('required')">Email is required</mat-error>
+        <mat-error *ngIf="email?.hasError('email')">Please enter a valid email</mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ data.isEdit ? 'New Password (optional)' : 'Password' }}</mat-label>
+        <input matInput type="password" formControlName="password" 
+               [placeholder]="data.isEdit ? 'Leave blank to keep current password' : 'Enter password'">
+        <mat-icon matSuffix>lock</mat-icon>
+        <mat-error *ngIf="password?.hasError('required')">Password is required</mat-error>
+        <mat-error *ngIf="password?.hasError('minlength')">Password must be at least 6 characters</mat-error>
+        <mat-hint *ngIf="data.isEdit">Leave blank to keep current password</mat-hint>
+      </mat-form-field>
+
+      <!-- Role -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="role" placeholder="Select user role">
+          <mat-option *ngFor="let role of roles" [value]="role.value">
+            {{ role.label }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matSuffix>security</mat-icon>
+        <mat-error *ngIf="role?.hasError('required')">Role is required</mat-error>
+      </mat-form-field>
+
+      <!-- Avatar URL -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Avatar URL</mat-label>
+        <input matInput formControlName="avatar" placeholder="Enter avatar image URL">
+        <mat-icon matSuffix>image</mat-icon>
+        <mat-hint>Profile picture URL (optional)</mat-hint>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <div class="action-buttons">
+      <button mat-button type="button" (click)="onCancel()" [disabled]="submitting()">
+        Cancel
+      </button>
+      
+      <button mat-raised-button 
+              color="primary" 
+              (click)="onSubmit()" 
+              [disabled]="!userForm.valid || submitting()">
+        <mat-spinner diameter="20" *ngIf="submitting(); else normalButton"></mat-spinner>
+        
+        <ng-template #normalButton>
+          {{ data.isEdit ? 'Update User' : 'Create User' }}
+        </ng-template>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div> 

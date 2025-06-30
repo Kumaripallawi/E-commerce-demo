@@ -1,0 +1,234 @@
+<div class="settings-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon>settings</mat-icon>
+    System Settings
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <mat-tab-group class="settings-tabs">
+      <!-- General Settings Tab -->
+      <mat-tab label="General">
+        <div class="tab-content">
+          <h3>General Settings</h3>
+          <form [formGroup]="generalForm" class="settings-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Site Name</mat-label>
+                <input matInput formControlName="siteName" placeholder="Enter site name">
+                <mat-icon matSuffix>business</mat-icon>
+                <mat-error *ngIf="siteName?.hasError('required')">Site name is required</mat-error>
+                <mat-error *ngIf="siteName?.hasError('minlength')">Site name must be at least 3 characters</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Admin Email</mat-label>
+                <input matInput type="email" formControlName="adminEmail" placeholder="Enter admin email">
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="adminEmail?.hasError('required')">Admin email is required</mat-error>
+                <mat-error *ngIf="adminEmail?.hasError('email')">Please enter a valid email</mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Site Description</mat-label>
+              <textarea matInput formControlName="siteDescription" rows="3" placeholder="Enter site description"></textarea>
+              <mat-icon matSuffix>description</mat-icon>
+              <mat-error *ngIf="siteDescription?.hasError('required')">Site description is required</mat-error>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Currency</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option *ngFor="let currency of currencies" [value]="currency.value">
+                    {{ currency.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>attach_money</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Time Zone</mat-label>
+                <mat-select formControlName="timeZone">
+                  <mat-option *ngFor="let tz of timeZones" [value]="tz.value">
+                    {{ tz.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>schedule</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Language</mat-label>
+              <mat-select formControlName="language">
+                <mat-option *ngFor="let lang of languages" [value]="lang.value">
+                  {{ lang.label }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>language</mat-icon>
+            </mat-form-field>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- E-commerce Settings Tab -->
+      <mat-tab label="E-commerce">
+        <div class="tab-content">
+          <h3>E-commerce Settings</h3>
+          <form [formGroup]="ecommerceForm" class="settings-form">
+            <div class="toggle-group">
+              <mat-slide-toggle formControlName="allowGuestCheckout" class="toggle-item">
+                <div class="toggle-content">
+                  <mat-icon>shopping_cart</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Allow Guest Checkout</span>
+                    <span class="toggle-description">Let customers checkout without creating an account</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+
+              <mat-slide-toggle formControlName="requireEmailVerification" class="toggle-item">
+                <div class="toggle-content">
+                  <mat-icon>verified_user</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Require Email Verification</span>
+                    <span class="toggle-description">Users must verify their email before accessing the account</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+
+              <mat-slide-toggle formControlName="enableReviews" class="toggle-item">
+                <div class="toggle-content">
+                  <mat-icon>rate_review</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Enable Product Reviews</span>
+                    <span class="toggle-description">Allow customers to leave reviews and ratings</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+
+              <mat-slide-toggle formControlName="enableWishlist" class="toggle-item">
+                <div class="toggle-content">
+                  <mat-icon>favorite_border</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Enable Wishlist</span>
+                    <span class="toggle-description">Allow customers to save products to wishlist</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- System Settings Tab -->
+      <mat-tab label="System">
+        <div class="tab-content">
+          <h3>System Settings</h3>
+          <form [formGroup]="systemForm" class="settings-form">
+            <div class="toggle-group">
+              <mat-slide-toggle formControlName="enableNotifications" class="toggle-item">
+                <div class="toggle-content">
+                  <mat-icon>notifications</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Enable Notifications</span>
+                    <span class="toggle-description">Send email notifications for orders and updates</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+
+              <mat-slide-toggle formControlName="enableAnalytics" class="toggle-item">
+                <div class="toggle-content">
+                  <mat-icon>analytics</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Enable Analytics</span>
+                    <span class="toggle-description">Track website usage and performance metrics</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+
+              <mat-slide-toggle formControlName="maintenanceMode" class="toggle-item warning">
+                <div class="toggle-content">
+                  <mat-icon>build</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Maintenance Mode</span>
+                    <span class="toggle-description">Temporarily disable the website for maintenance</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+
+              <mat-slide-toggle formControlName="autoBackup" class="toggle-item">
+                <div class="toggle-content">
+                  <mat-icon>backup</mat-icon>
+                  <div class="toggle-text">
+                    <span class="toggle-label">Automatic Backup</span>
+                    <span class="toggle-description">Automatically backup data daily</span>
+                  </div>
+                </div>
+              </mat-slide-toggle>
+            </div>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Max File Upload Size</mat-label>
+              <mat-select formControlName="maxFileSize">
+                <mat-option *ngFor="let size of fileSizeOptions" [value]="size.value">
+                  {{ size.label }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>cloud_upload</mat-icon>
+              <mat-error *ngIf="maxFileSize?.hasError('required')">File size is required</mat-error>
+            </mat-form-field>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- Appearance Tab -->
+      <mat-tab label="Appearance">
+        <div class="tab-content">
+          <h3>Appearance Settings</h3>
+          <div class="appearance-settings">
+            <div class="theme-toggle-section">
+              <div class="theme-info">
+                <mat-icon>palette</mat-icon>
+                <div class="theme-text">
+                  <span class="theme-label">Dark Theme</span>
+                  <span class="theme-description">Switch between light and dark themes</span>
+                </div>
+              </div>
+              <button mat-raised-button color="primary" (click)="toggleTheme()" class="theme-button">
+                <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                Switch to {{ themeService.isDark() ? 'Light' : 'Dark' }} Theme
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <div class="action-buttons">
+      <button mat-button (click)="onReset()" [disabled]="saving()">
+        <mat-icon>refresh</mat-icon>
+        Reset
+      </button>
+      
+      <button mat-button (click)="onRestoreDefaults()" [disabled]="saving()">
+        <mat-icon>restore</mat-icon>
+        Restore Defaults
+      </button>
+      
+      <button mat-button (click)="onClose()" [disabled]="saving()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      
+      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="saving()" class="save-button">
+        <mat-spinner diameter="20" *ngIf="saving(); else saveButton"></mat-spinner>
+        <ng-template #saveButton>
+          Save Settings
+        </ng-template>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div> 

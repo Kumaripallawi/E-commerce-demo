@@ -1,0 +1,157 @@
+<div class="orders-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon>receipt_long</mat-icon>
+    Order Management
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <!-- Loading indicator -->
+    <div *ngIf="loading()" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading orders...</p>
+    </div>
+
+    <!-- Orders table -->
+    <div class="table-container" *ngIf="!loading()">
+      <table mat-table [dataSource]="orders()" class="orders-table">
+        <!-- Order ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>Order #</th>
+          <td mat-cell *matCellDef="let order">{{ order.id }}</td>
+        </ng-container>
+
+        <!-- Customer Column -->
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Customer</th>
+          <td mat-cell *matCellDef="let order">
+            <div class="customer-info">
+              <span class="customer-name">{{ order.customerName }}</span>
+              <span class="customer-email">{{ order.customerEmail }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Items Column -->
+        <ng-container matColumnDef="items">
+          <th mat-header-cell *matHeaderCellDef>Items</th>
+          <td mat-cell *matCellDef="let order">
+            <div class="items-summary">
+              <span class="item-count">{{ order.items.length }} item(s)</span>
+              <div class="item-preview">
+                <img *ngFor="let item of order.items.slice(0, 3)" 
+                     [src]="item.image" 
+                     [alt]="item.productName"
+                     class="item-image">
+                <span *ngIf="order.items.length > 3" class="more-items">
+                  +{{ order.items.length - 3 }}
+                </span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Total Column -->
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let order">
+            <span class="order-total">${{ order.total.toFixed(2) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let order">
+            <mat-form-field appearance="outline" class="status-field">
+              <mat-select [value]="order.status" 
+                         (selectionChange)="updateOrderStatus(order.id, $event.value)"
+                         [disabled]="updatingOrder() === order.id || order.status === 'delivered' || order.status === 'cancelled'">
+                <mat-select-trigger>
+                  <span class="selected-status-text" [class]="getStatusClass(order.status)">
+                    {{ getStatusLabel(order.status) }}
+                  </span>
+                </mat-select-trigger>
+                <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                  <div class="status-option" [class]="getStatusClass(status.value)">
+                    <mat-icon>{{ status.icon }}</mat-icon>
+                    {{ status.label }}
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-spinner diameter="20" 
+                        *ngIf="updatingOrder() === order.id"
+                        class="updating-spinner"></mat-spinner>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let order">
+            <span class="order-date">{{ order.orderDate | date:'short' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let order">
+            <div class="action-buttons">
+              <button mat-icon-button 
+                      color="primary" 
+                      (click)="viewOrderDetails(order)"
+                      matTooltip="View Details">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      color="warn" 
+                      (click)="cancelOrder(order)"
+                      [disabled]="order.status === 'delivered' || order.status === 'cancelled'"
+                      matTooltip="Cancel Order">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- Empty state -->
+      <div *ngIf="orders().length === 0" class="empty-state">
+        <mat-icon>receipt_long</mat-icon>
+        <h4>No Orders Found</h4>
+        <p>Orders will appear here when customers place them.</p>
+      </div>
+    </div>
+
+    <!-- Order Statistics -->
+    <div class="order-stats" *ngIf="!loading() && orders().length > 0">
+      <div class="stat-item">
+        <mat-icon>schedule</mat-icon>
+        <span>{{ pendingOrders() }} Pending</span>
+      </div>
+      <div class="stat-item">
+        <mat-icon>hourglass_empty</mat-icon>
+        <span>{{ processingOrders() }} Processing</span>
+      </div>
+      <div class="stat-item">
+        <mat-icon>local_shipping</mat-icon>
+        <span>{{ shippedOrders() }} Shipped</span>
+      </div>
+      <div class="stat-item">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ deliveredOrders() }} Delivered</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-raised-button color="primary" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+  </mat-dialog-actions>
+</div> 

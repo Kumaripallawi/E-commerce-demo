@@ -1,0 +1,225 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p *ngIf="currentUser$ | async as user">Welcome back, {{user.name}}!</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon products">inventory</mat-icon>
+          <div class="stat-details">
+            <span class="stat-number">{{totalProducts()}}</span>
+            <span class="stat-label">Products</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon users">people</mat-icon>
+          <div class="stat-details">
+            <span class="stat-number">{{totalUsers()}}</span>
+            <span class="stat-label">Users</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon orders">shopping_bag</mat-icon>
+          <div class="stat-details">
+            <span class="stat-number">{{totalOrders()}}</span>
+            <span class="stat-label">Orders</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon revenue">attach_money</mat-icon>
+          <div class="stat-details">
+            <span class="stat-number">${{totalRevenue().toLocaleString()}}</span>
+            <span class="stat-label">Revenue</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Management Tabs -->
+  <mat-card class="management-card">
+    <mat-tab-group (selectedTabChange)="onTabChange($event.index)">
+      <!-- Products Tab -->
+      <mat-tab label="Products">
+        <div class="tab-content">
+          <div class="tab-header">
+            <h2>Product Management</h2>
+            <button mat-raised-button color="primary" (click)="addProduct()">
+              <mat-icon>add</mat-icon>
+              Add Product
+            </button>
+          </div>
+
+          <div class="table-container" #productsContainer>
+            <table mat-table [dataSource]="products()" class="admin-table">
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let product">{{product.id}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let product">{{product.title}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef>Price</th>
+                <td mat-cell *matCellDef="let product">${{product.price}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef>Category</th>
+                <td mat-cell *matCellDef="let product">{{product.category.name}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let product">
+                  <button mat-icon-button color="primary" (click)="editProduct(product)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteProduct(product.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="productColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: productColumns;"></tr>
+            </table>
+            
+            <!-- Infinite scroll loading indicator for products -->
+            <div class="infinite-scroll-loading" *ngIf="isLoadingMoreProducts">
+              <mat-spinner diameter="30"></mat-spinner>
+              <span>Loading more products...</span>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Users Tab -->
+      <mat-tab label="Users">
+        <div class="tab-content">
+          <div class="tab-header">
+            <h2>User Management</h2>
+            <button mat-raised-button color="primary" (click)="addUser()">
+              <mat-icon>add</mat-icon>
+              Add User
+            </button>
+          </div>
+
+          <div class="table-container" #usersContainer>
+            <!-- Loading indicator -->
+            <div *ngIf="loading() && !usersLoaded()" class="loading-container">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading users...</p>
+            </div>
+
+            <!-- Users table -->
+            <table mat-table [dataSource]="users()" class="admin-table" *ngIf="!loading() || usersLoaded()">
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let user">{{user.id}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let user">{{user.name}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef>Email</th>
+                <td mat-cell *matCellDef="let user">{{user.email}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef>Role</th>
+                <td mat-cell *matCellDef="let user">
+                  <span class="role-badge" [class]="user.role">{{user.role}}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let user">
+                  <button mat-icon-button color="primary" (click)="editUser(user)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteUser(user.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="userColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: userColumns;"></tr>
+            </table>
+            
+            <!-- Users are loaded all at once, no infinite scroll loading needed -->
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Quick Actions Tab -->
+      <mat-tab label="Quick Actions">
+        <div class="tab-content">
+          <h2>Quick Actions</h2>
+          
+          <!-- UI Notice -->
+          <div class="ui-notice">
+            <mat-icon>info</mat-icon>
+            <div class="notice-content">
+              <h4>Development Notice</h4>
+              <p><strong>System Settings</strong> and <strong>View Orders</strong> are currently UI prototypes for demonstration purposes. Only <strong>Manage Categories</strong> is fully functional.</p>
+            </div>
+          </div>
+          
+          <div class="quick-actions-grid">
+            <mat-card class="action-card" (click)="manageCategories()">
+              <mat-card-content>
+                <mat-icon>category</mat-icon>
+                <h3>Manage Categories</h3>
+                <p>Add, edit, or remove product categories</p>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="action-card" (click)="viewOrders()">
+              <mat-card-content>
+                <mat-icon>receipt_long</mat-icon>
+                <h3>View Orders</h3>
+                <p>Monitor and manage customer orders</p>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="action-card" (click)="viewSettings()">
+              <mat-card-content>
+                <mat-icon>settings</mat-icon>
+                <h3>System Settings</h3>
+                <p>Configure system preferences</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div> 

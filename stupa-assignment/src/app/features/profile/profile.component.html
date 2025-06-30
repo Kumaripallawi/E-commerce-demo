@@ -1,0 +1,69 @@
+<div class="profile-container">
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="header-background"></div>
+    <div class="header-content" *ngIf="user$ | async as user">
+      <div class="avatar-section">
+        <div class="avatar-wrapper">
+          <img [src]="user.avatar" [alt]="user.name" (error)="onImageError($event)" class="avatar-image">
+          <div class="avatar-overlay">
+            <mat-icon>camera_alt</mat-icon>
+          </div>
+        </div>
+      </div>
+      <div class="user-info">
+        <h1 class="user-name">{{user.name}}</h1>
+        <p class="user-role">{{user.role | titlecase}} Account</p>
+        <div class="user-meta">
+          <span class="meta-item">
+            <mat-icon>email</mat-icon>
+            {{user.email}}
+          </span>
+          <span class="meta-item">
+            <mat-icon>schedule</mat-icon>
+            Member since {{formatDate(user.creationAt)}}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <!-- Account Details Card -->
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>person</mat-icon>
+          Account Details
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="details-grid" *ngIf="user$ | async as user">
+          <div class="detail-item">
+            <label>Full Name</label>
+            <span>{{user.name}}</span>
+          </div>
+          <div class="detail-item">
+            <label>Email Address</label>
+            <span>{{user.email}}</span>
+          </div>
+          <div class="detail-item">
+            <label>Account Type</label>
+            <span class="role-badge" [class]="'role-' + user.role">{{user.role | titlecase}}</span>
+          </div>
+          <div class="detail-item">
+            <label>Member Since</label>
+            <span>{{formatDate(user.creationAt)}}</span>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions class="logout-section">
+        <button mat-raised-button color="warn" class="logout-btn" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div> 

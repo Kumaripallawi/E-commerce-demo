@@ -1,0 +1,336 @@
+<div class="product-list-container">
+  <!-- Modern Products Section (Full Width) -->
+  <div class="products-section">
+    <!-- Enhanced Header with Tabs -->
+    <div class="products-header">
+      <div class="products-title">
+        <h2>
+          <mat-icon class="products-icon">shopping_bag</mat-icon>
+          Discover Products
+        </h2>
+      </div>
+      
+      <div class="header-controls">
+        <!-- API Selection Tabs -->
+        <div class="api-tabs">
+          <button mat-button 
+                  [class.active]="!useGraphQL()"
+                  (click)="!useGraphQL() ? null : toggleApiMethod()"
+                  [disabled]="loading() || loadingMore()"
+                  class="api-tab">
+            <mat-icon>api</mat-icon>
+            REST API
+          </button>
+          <button mat-button 
+                  [class.active]="useGraphQL()"
+                  (click)="useGraphQL() ? null : toggleApiMethod()"
+                  [disabled]="loading() || loadingMore()"
+                  class="api-tab">
+            <mat-icon>graphic_eq</mat-icon>
+            GraphQL
+          </button>
+        </div>
+        
+        <!-- View Toggle -->
+        <div class="view-toggle">
+          <button mat-icon-button 
+                  [class.active]="viewMode() === 'grid'" 
+                  (click)="setViewMode('grid')"
+                  matTooltip="Grid View">
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button mat-icon-button 
+                  [class.active]="viewMode() === 'list'" 
+                  (click)="setViewMode('list')"
+                  matTooltip="List View">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Filters Chips Bar -->
+    <div class="active-filters-bar" *ngIf="hasActiveFilters()">
+      <div class="active-filters-content">
+        <span class="filters-label">
+          <mat-icon>filter_list</mat-icon>
+          Active Filters:
+        </span>
+        
+        <div class="filter-chips">
+          <mat-chip *ngIf="filterForm.get('search')?.value" 
+                    removable="true" 
+                    (removed)="removeFilter('search')"
+                    class="filter-chip search-chip">
+            <mat-icon matChipAvatar>search</mat-icon>
+            "{{filterForm.get('search')?.value}}"
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+
+          <mat-chip *ngIf="filterForm.get('categoryId')?.value" 
+                    removable="true" 
+                    (removed)="removeFilter('categoryId')"
+                    class="filter-chip category-chip">
+            <mat-icon matChipAvatar>category</mat-icon>
+            {{getCategoryName(filterForm.get('categoryId')?.value)}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+
+          <mat-chip *ngIf="filterForm.get('minPrice')?.value || filterForm.get('maxPrice')?.value" 
+                    removable="true" 
+                    (removed)="removeFilter('price')"
+                    class="filter-chip price-chip">
+            <mat-icon matChipAvatar>attach_money</mat-icon>
+            ${{filterForm.get('minPrice')?.value || 0}} - ${{filterForm.get('maxPrice')?.value || '∞'}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+
+          <mat-chip *ngIf="filterForm.get('sortBy')?.value !== 'asc'" 
+                    removable="true" 
+                    (removed)="removeFilter('sortBy')"
+                    class="filter-chip sort-chip">
+            <mat-icon matChipAvatar>sort</mat-icon>
+            {{filterForm.get('sortBy')?.value === 'desc' ? 'High to Low' : 'Low to High'}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        </div>
+
+        <button mat-button 
+                color="warn" 
+                (click)="clearFilters()" 
+                class="clear-all-btn">
+          <mat-icon>clear_all</mat-icon>
+          Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="loading-container">
+      <div class="loading-content">
+        <mat-spinner diameter="60"></mat-spinner>
+        <h3>Loading amazing products...</h3>
+        <p>Please wait while we fetch the best deals for you</p>
+      </div>
+    </div>
+
+    <!-- No Products State -->
+    <div *ngIf="!loading() && products().length === 0" class="no-products">
+      <div class="no-products-content">
+        <mat-icon>search_off</mat-icon>
+        <h3>No products found</h3>
+        <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+        <button mat-raised-button color="primary" (click)="clearFilters()">
+          <mat-icon>refresh</mat-icon>
+          Reset Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div *ngIf="!loading() && products().length > 0" 
+         class="products-grid" 
+         [class.list-view]="viewMode() === 'list'">
+      <mat-card *ngFor="let product of products()" class="product-card">
+        <div class="product-image">
+          <img [src]="product.images[0]" 
+               [alt]="product.title" 
+               (error)="onImageError($event)"
+               loading="lazy">
+          <div class="product-overlay">
+            <button mat-fab color="primary" 
+                    (click)="addToCart(product)"
+                    class="add-to-cart-fab"
+                    matTooltip="Add to Cart">
+              <mat-icon>add_shopping_cart</mat-icon>
+            </button>
+          </div>
+          <div class="product-badge">
+            <mat-chip color="accent">New</mat-chip>
+          </div>
+        </div>
+
+        <mat-card-content class="product-content">
+          <div class="product-category">
+            <mat-chip>{{product.category.name}}</mat-chip>
+          </div>
+          <h3 class="product-title" [title]="product.title">{{product.title}}</h3>
+          <p class="product-description" [title]="product.description">
+            {{product.description}}
+          </p>
+          <div class="product-price">
+            <span class="price">${{product.price}}</span>
+            <span class="original-price">${{(product.price * 1.2).toFixed(2)}}</span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="product-actions">
+          <button mat-button color="primary" [routerLink]="['/products', product.id]">
+            <mat-icon>visibility</mat-icon>
+            View Details
+          </button>
+          <button mat-raised-button color="primary" (click)="addToCart(product)">
+            <mat-icon>add_shopping_cart</mat-icon>
+            Add to Cart
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Infinite Scroll Indicators -->
+    <div *ngIf="loadingMore()" class="loading-more-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading more amazing products...</p>
+    </div>
+
+    <div *ngIf="!loading() && !loadingMore() && !hasMoreData() && products().length > 0" 
+         class="end-of-data">
+      <mat-icon>check_circle</mat-icon>
+      <p>🎉 You've seen all our amazing products!</p>
+    </div>
+
+    <div *ngIf="!loading() && hasMoreData() && products().length > 0 && !loadingMore()" 
+         class="scroll-hint">
+      <mat-icon>keyboard_arrow_down</mat-icon>
+      <p>Scroll down to discover more</p>
+    </div>
+  </div>
+
+  <!-- Floating Action Buttons -->
+  <div class="floating-actions">
+    <!-- Quick Search FAB -->
+    <button mat-fab 
+            color="accent" 
+            class="quick-search-fab"
+            (click)="toggleQuickSearch()"
+            matTooltip="Quick Search"
+            [class.active]="showQuickSearch()">
+      <mat-icon>{{showQuickSearch() ? 'close' : 'search'}}</mat-icon>
+    </button>
+
+    <!-- Filter FAB -->
+    <button mat-fab 
+            color="primary" 
+            class="filter-fab"
+            (click)="toggleFilterPanel()"
+            matTooltip="Filters & Sort"
+            [class.active]="showFilterPanel()">
+      <mat-icon>{{showFilterPanel() ? 'close' : 'tune'}}</mat-icon>
+      <span *ngIf="getActiveFiltersCount() > 0" class="filter-badge">{{getActiveFiltersCount()}}</span>
+    </button>
+  </div>
+
+  <!-- Quick Search Panel -->
+  <div class="quick-search-panel" [class.show]="showQuickSearch()">
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="filterForm">
+          <mat-form-field appearance="outline" class="quick-search-field">
+            <mat-label>Search Products</mat-label>
+            <input matInput 
+                   formControlName="search" 
+                   placeholder="Type to search..."
+                   #searchInput>
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Advanced Filter Panel -->
+  <div class="filter-panel" [class.show]="showFilterPanel()">
+    <mat-card class="filter-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>tune</mat-icon>
+          Advanced Filters
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="filterForm" class="filter-form">
+          <!-- Category Filter -->
+          <div class="filter-section">
+            <h4>
+              <mat-icon>category</mat-icon>
+              Category
+            </h4>
+            <mat-form-field appearance="outline">
+              <mat-label>Select Category</mat-label>
+              <mat-select formControlName="categoryId">
+                <mat-option value="">All Categories</mat-option>
+                <mat-option *ngFor="let category of categories$ | async" [value]="category.id">
+                  {{category.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div class="filter-section">
+            <h4>
+              <mat-icon>attach_money</mat-icon>
+              Price Range
+            </h4>
+            <div class="price-range-simple">
+              <div class="price-input-group">
+                <label class="price-label">Min Price</label>
+                <input type="number" 
+                       formControlName="minPrice" 
+                       class="price-input"
+                       min="0">
+              </div>
+              <span class="price-separator">to</span>
+              <div class="price-input-group">
+                <label class="price-label">Max Price</label>
+                <input type="number" 
+                       formControlName="maxPrice" 
+                       class="price-input"
+                       min="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Sort Options -->
+          <div class="filter-section">
+            <h4>
+              <mat-icon>sort</mat-icon>
+              Sort By
+            </h4>
+            <mat-radio-group formControlName="sortBy" class="sort-options">
+              <mat-radio-button value="asc">
+                <div class="radio-content">
+                  <mat-icon>trending_up</mat-icon>
+                  <span>Price: Low to High</span>
+                </div>
+              </mat-radio-button>
+              <mat-radio-button value="desc">
+                <div class="radio-content">
+                  <mat-icon>trending_down</mat-icon>
+                  <span>Price: High to Low</span>
+                </div>
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions class="filter-actions">
+        <button mat-button (click)="clearFilters()" color="warn">
+          <mat-icon>clear</mat-icon>
+          Clear All
+        </button>
+        <button mat-raised-button (click)="applyFilters()" color="primary">
+          <mat-icon>check</mat-icon>
+          Apply Filters
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Backdrop -->
+  <div class="backdrop" 
+       [class.show]="showFilterPanel() || showQuickSearch()"
+       (click)="closeAllPanels()"></div>
+</div> 

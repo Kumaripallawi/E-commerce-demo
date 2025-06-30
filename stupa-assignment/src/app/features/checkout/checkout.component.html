@@ -1,0 +1,21 @@
+<div class="checkout-container">
+  <h1>Checkout</h1>
+  
+  <mat-card class="checkout-card">
+    <mat-card-content>
+      <p>This is a protected checkout page that requires authentication.</p>
+      <p>Your order will be processed here.</p>
+      
+      <div class="actions">
+        <button mat-button routerLink="/cart">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Cart
+        </button>
+        <button mat-raised-button color="primary" (click)="completeOrder()">
+          <mat-icon>payment</mat-icon>
+          Complete Order
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div> 

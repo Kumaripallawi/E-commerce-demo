@@ -1,0 +1,38 @@
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.not-found-content {
+  max-width: 400px;
+  padding: 40px;
+}
+
+.error-icon {
+  font-size: 80px;
+  height: 80px;
+  width: 80px;
+  color: #ff6b6b;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+p {
+  margin: 0 0 24px 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+} 

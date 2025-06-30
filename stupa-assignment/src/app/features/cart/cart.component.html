@@ -1,0 +1,183 @@
+<div class="cart-container">
+  <div class="cart-header">
+    <h1>Shopping Cart</h1>
+    <p *ngIf="cartItems().length > 0">
+      {{getTotalItems()}} item{{getTotalItems() > 1 ? 's' : ''}} in your cart
+    </p>
+  </div>
+
+  <!-- Empty Cart State -->
+  <div *ngIf="cartItems().length === 0" class="empty-cart">
+    <mat-card class="empty-cart-card">
+      <mat-card-content>
+        <div class="empty-cart-content">
+          <mat-icon class="empty-icon">shopping_cart</mat-icon>
+          
+          <!-- Not Logged In State -->
+          <div *ngIf="!cartService.isAuthenticated()">
+            <h2>Please log in to view your cart</h2>
+            <p>Sign in to access your saved cart items and continue shopping!</p>
+            <div class="auth-buttons">
+              <button mat-raised-button color="primary" routerLink="/auth/login" class="login-button">
+                <mat-icon>login</mat-icon>
+                Login
+              </button>
+              <button mat-button routerLink="/auth/register" class="register-button">
+                <mat-icon>person_add</mat-icon>
+                Sign Up
+              </button>
+            </div>
+          </div>
+          
+          <!-- Logged In but Empty Cart -->
+          <div *ngIf="cartService.isAuthenticated()">
+            <h2>Your cart is empty</h2>
+            <p>Add some items to your cart to get started!</p>
+            <button mat-raised-button color="primary" routerLink="/products" class="shop-now-button">
+              <mat-icon>arrow_back</mat-icon>
+              Start Shopping
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Cart with Items -->
+  <div *ngIf="cartItems().length > 0" class="cart-content">
+    <!-- Cart Items -->
+    <div class="cart-items">
+      <mat-card 
+        *ngFor="let item of cartItems(); trackBy: trackByCartItem" 
+        class="cart-item-card">
+        <div class="cart-item">
+          <div class="item-image">
+            <img 
+              [src]="item.product.images[0]" 
+              [alt]="item.product.title"
+              (error)="onImageError($event)">
+          </div>
+
+          <div class="item-details">
+            <h3 class="item-title">{{item.product.title}}</h3>
+            <p class="item-category">{{item.product.category.name}}</p>
+            
+            <!-- Product Variants -->
+            <div *ngIf="getVariantEntries(item.selectedVariants).length > 0" class="item-variants">
+              <div 
+                *ngFor="let variant of getVariantEntries(item.selectedVariants)" 
+                class="variant-info">
+                <strong>{{variant.key}}:</strong> {{variant.value}}
+              </div>
+            </div>
+
+            <div class="item-price">
+              <span class="unit-price">${{item.product.price}} each</span>
+              <span class="total-price">
+                ${{(item.product.price * item.quantity).toFixed(2)}}
+              </span>
+            </div>
+          </div>
+
+          <div class="item-actions">
+            <!-- Quantity Controls -->
+            <div class="quantity-controls">
+              <button 
+                type="button"
+                (click)="decreaseQuantity(item)"
+                [disabled]="item.quantity <= 1"
+                class="quantity-btn">
+                −
+              </button>
+              
+              <input 
+                type="number" 
+                class="quantity-input"
+                [value]="item.quantity"
+                min="1" 
+                max="10"
+                (blur)="updateQuantity(item, $event)">
+              
+              <button 
+                type="button"
+                (click)="increaseQuantity(item)"
+                [disabled]="item.quantity >= 10"
+                class="quantity-btn">
+                +
+              </button>
+            </div>
+
+            <!-- Remove Button -->
+            <button 
+              mat-button 
+              color="warn" 
+              (click)="removeItem(item)" 
+              class="remove-button">
+              <mat-icon>delete</mat-icon>
+              Remove
+            </button>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Clear Cart Button -->
+      <div class="cart-actions">
+        <button 
+          mat-button 
+          color="warn" 
+          (click)="clearCart()" 
+          class="clear-cart">
+          <mat-icon>clear_all</mat-icon>
+          Clear Cart
+        </button>
+      </div>
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="cart-summary">
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>Order Summary</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="summary-row">
+            <span>Subtotal ({{getTotalItems()}} items):</span>
+            <span class="amount">${{getSubtotal().toFixed(2)}}</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Tax (8.5%):</span>
+            <span class="amount">${{getTax().toFixed(2)}}</span>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="summary-row total-row">
+            <span class="total-label">Total:</span>
+            <span class="total-amount">${{getTotal().toFixed(2)}}</span>
+          </div>
+        </mat-card-content>
+
+        <div class="summary-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="proceedToCheckout()" 
+            class="checkout-button">
+            <mat-icon>shopping_cart_checkout</mat-icon>
+            Checkout
+          </button>
+
+          <button 
+            mat-button 
+            routerLink="/products" 
+            class="continue-shopping">
+            <mat-icon>arrow_back</mat-icon>
+            Continue Shopping
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div> 

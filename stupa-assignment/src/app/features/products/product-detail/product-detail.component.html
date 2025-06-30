@@ -1,0 +1,97 @@
+<div class="product-detail-container" *ngIf="!loading(); else loadingTemplate">
+  <div class="breadcrumb">
+    <a (click)="goBack()" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Products
+    </a>
+  </div>
+
+  <div class="product-detail-content" *ngIf="product()">
+    <!-- Image Gallery -->
+    <div class="image-gallery">
+      <div class="main-image">
+        <img [src]="selectedImage()" 
+             [alt]="product()!.title"
+             (error)="onImageError($event)">
+      </div>
+      <div class="thumbnail-images" *ngIf="product()!.images.length > 1">
+        <img *ngFor="let image of product()!.images; let i = index"
+             [src]="image"
+             [alt]="product()!.title + ' - Image ' + (i + 1)"
+             [class.active]="selectedImage() === image"
+             (click)="selectImage(image)"
+             (error)="onImageError($event)">
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <div class="product-category">
+        <mat-chip>{{product()!.category.name}}</mat-chip>
+      </div>
+
+      <h1 class="product-title">{{product()!.title}}</h1>
+      
+      <div class="product-price">
+        <span class="price">${{product()!.price}}</span>
+      </div>
+
+      <div class="product-description">
+        <h3>Description</h3>
+        <p>{{product()!.description}}</p>
+      </div>
+
+      <!-- Quantity and Action Form -->
+      <form [formGroup]="quantityForm" class="purchase-form">
+        <div class="purchase-row">
+          <div class="quantity-section">
+            <div class="quantity-control">
+              <button type="button" 
+                      mat-icon-button 
+                      (click)="decreaseQuantity()"
+                      [disabled]="quantityForm.get('quantity')?.value <= 1">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <input matInput type="number" 
+                     formControlName="quantity" 
+                     min="1" max="10"
+                     class="quantity-input">
+              <button type="button" 
+                      mat-icon-button 
+                      (click)="increaseQuantity()"
+                      [disabled]="quantityForm.get('quantity')?.value >= 10">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button mat-raised-button 
+                    color="primary" 
+                    class="add-to-cart-btn"
+                    (click)="addToCart()"
+                    [disabled]="!quantityForm.valid">
+              <mat-icon>add_shopping_cart</mat-icon>
+              Add to Cart
+            </button>
+            
+            <button mat-stroked-button 
+                    color="primary"
+                    (click)="buyNow()"
+                    [disabled]="!quantityForm.valid">
+              <mat-icon>flash_on</mat-icon>
+              Buy Now
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading product details...</p>
+  </div>
+</ng-template> 

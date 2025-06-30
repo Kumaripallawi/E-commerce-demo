@@ -1,0 +1,217 @@
+.user-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 550px;
+  max-height: 90vh;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 24px 24px 16px 24px;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: var(--bg-accent);
+  border-bottom: 1px solid var(--border-color);
+
+  mat-icon {
+    color: var(--primary-color);
+    font-size: 28px;
+  }
+}
+
+.dialog-content {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--card-bg);
+  min-height: 0;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Material form field theming
+::ng-deep .user-dialog {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--input-bg);
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background-color: var(--input-focus);
+    }
+
+    .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--input-border);
+      }
+    }
+
+    &.mat-focused .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--input-focus) !important;
+      }
+    }
+
+    .mat-mdc-form-field-label {
+      color: var(--text-secondary);
+    }
+
+    .mat-mdc-form-field-hint {
+      color: var(--text-muted);
+    }
+
+    .mat-mdc-form-field-error {
+      color: var(--error-color);
+    }
+
+    input {
+      color: var(--text-primary);
+      
+      &::placeholder {
+        color: var(--input-placeholder);
+      }
+    }
+
+    .mat-mdc-select-value {
+      color: var(--text-primary);
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      color: var(--text-secondary);
+    }
+  }
+
+  .mat-mdc-select-panel {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    
+    .mat-mdc-option {
+      color: var(--text-primary);
+      
+      &:hover {
+        background-color: var(--bg-accent);
+      }
+      
+      &.mat-mdc-option-active {
+        background-color: var(--primary-color);
+        color: var(--text-inverse);
+      }
+    }
+  }
+}
+
+.dialog-actions {
+  padding: 16px 24px 24px 24px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-accent);
+  flex-shrink: 0;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    font-weight: 500;
+    padding: 12px 24px;
+    height: 44px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.2s ease;
+    
+    &[mat-button] {
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      
+      &:hover:not(:disabled) {
+        background-color: var(--bg-tertiary);
+        border-color: var(--text-secondary);
+      }
+    }
+
+    &[mat-raised-button] {
+      background: var(--gradient-primary);
+      color: var(--text-inverse);
+      border: none;
+      
+      &:hover:not(:disabled) {
+        box-shadow: 0 4px 12px var(--shadow-medium);
+        transform: translateY(-1px);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        transform: none;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Dark mode specific adjustments
+[data-theme="dark"] {
+  .user-dialog {
+    .dialog-actions button[mat-raised-button]:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .user-dialog {
+    max-width: 95vw;
+    max-height: 90vh;
+  }
+
+  .dialog-title {
+    padding: 16px;
+    font-size: 1.3rem;
+  }
+
+  .dialog-content {
+    padding: 16px;
+    max-height: 60vh;
+  }
+
+  .dialog-actions {
+    padding: 12px 16px 16px 16px;
+  }
+
+  .action-buttons {
+    flex-direction: column-reverse;
+    gap: 8px;
+
+    button {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+} 

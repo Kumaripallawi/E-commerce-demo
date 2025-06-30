@@ -1,0 +1,387 @@
+mat-toolbar.header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 1000 !important;
+  box-shadow: 0 2px 4px var(--shadow-light) !important;
+  background: var(--header-bg) !important;
+  color: var(--text-inverse) !important;
+  min-height: 64px !important;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  height: 100%;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-inverse);
+  font-size: 1.2rem;
+  font-weight: 500;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+.nav-section {
+  display: flex;
+  gap: 8px;
+
+  a {
+    color: var(--text-inverse) !important;
+    transition: background-color 0.3s ease;
+    
+    &.active {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      border-radius: 4px;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    &.admin-nav {
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.25) !important;
+      }
+      
+      mat-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.actions-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Theme Toggle Button
+.theme-toggle-btn {
+  position: relative;
+  color: var(--text-inverse) !important;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: scale(1.05);
+  }
+
+  mat-icon {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover mat-icon {
+    transform: rotate(15deg);
+  }
+
+  // Add a subtle animation when theme changes
+  &.theme-changing {
+    animation: themeSwitch 0.5s ease-in-out;
+  }
+}
+
+@keyframes themeSwitch {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.cart-button {
+  position: relative;
+  color: var(--text-inverse) !important;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-inverse) !important;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .user-role {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    
+    &.admin {
+      background-color: var(--error-color);
+      color: var(--text-inverse);
+    }
+    
+    &.customer {
+      background-color: var(--success-color);
+      color: var(--text-inverse);
+    }
+  }
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-inverse) !important;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+.active {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 8px;
+  }
+
+  .user-button span,
+  .login-button span {
+    display: none;
+  }
+
+  .theme-toggle-btn {
+    margin-right: 4px;
+  }
+
+  // Mobile cart dropdown adjustments
+  ::ng-deep .cart-dropdown {
+    .mat-mdc-menu-panel {
+      min-width: 280px !important;
+      max-width: calc(100vw - 16px) !important; // Even more constrained on mobile
+    }
+  }
+
+  .cart-dropdown-content {
+    padding: 12px; // Reduce padding on mobile
+  }
+
+  .cart-items .cart-item {
+    .item-details {
+      .item-name {
+        font-size: 13px; // Slightly smaller text on mobile
+      }
+      
+      .item-info {
+        font-size: 11px; // Slightly smaller text on mobile
+      }
+    }
+  }
+}
+
+/* Cart Dropdown Styles */
+::ng-deep .cart-dropdown {
+  .mat-mdc-menu-panel {
+    min-width: 300px !important;
+    max-width: min(400px, calc(100vw - 32px)) !important; // Responsive max width
+    max-height: 500px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 25px var(--shadow-medium) !important;
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border);
+    overflow: hidden !important; // Prevent panel overflow
+  }
+}
+
+.cart-dropdown-content {
+  padding: 16px;
+  max-height: 450px;
+  overflow-y: auto;
+  background-color: var(--card-bg);
+}
+
+.cart-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+
+  mat-icon {
+    color: var(--primary-color);
+    margin-right: 8px;
+  }
+
+  .cart-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 20px 0;
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    color: var(--text-disabled);
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+}
+
+.cart-items {
+  .cart-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-light);
+    min-width: 0; // Allow flex item to shrink
+    overflow: hidden; // Prevent item overflow
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .item-image {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      object-fit: cover;
+      margin-right: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .item-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0; // Allow flex item to shrink below content size
+      overflow: hidden; // Prevent parent overflow
+
+      .item-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%; // Use full available width
+        margin-bottom: 2px;
+      }
+
+      .item-info {
+        font-size: 12px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%; // Ensure price info also uses ellipsis if needed
+      }
+    }
+  }
+
+  .more-items {
+    text-align: center;
+    padding: 12px 0;
+    background-color: var(--bg-accent);
+    border-radius: 4px;
+    margin: 8px 0;
+
+    .more-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+  }
+
+  .cart-actions {
+    margin-top: 16px;
+
+    .show-more-btn {
+      width: 100%;
+      height: 40px;
+      font-weight: 500;
+    }
+  }
+}
+
+/* Custom scrollbar for cart dropdown */
+.cart-dropdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cart-dropdown-content::-webkit-scrollbar-track {
+  background: var(--scrollbar-track, var(--bg-tertiary));
+  border-radius: 3px;
+}
+
+.cart-dropdown-content::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, var(--border-dark));
+  border-radius: 3px;
+}
+
+.cart-dropdown-content::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, var(--text-muted));
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] {
+  .cart-dropdown-content {
+    color: var(--text-primary);
+  }
+
+  .theme-toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  .nav-section a:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  .cart-button:hover,
+  .user-button:hover,
+  .login-button:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+  }
+} 

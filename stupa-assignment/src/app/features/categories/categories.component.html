@@ -1,0 +1,68 @@
+<div class="categories-container">
+  <div class="categories-header">
+    <h1>
+      <mat-icon>category</mat-icon>
+      Shop by Category
+    </h1>
+    <p class="categories-subtitle">Discover amazing products across different categories</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <h3>Loading categories...</h3>
+    <p>Please wait while we fetch the latest categories for you</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()" class="error-container">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <h3>Oops! Something went wrong</h3>
+    <p>{{error()}}</p>
+    <button mat-raised-button (click)="retry()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Categories Grid -->
+  <div *ngIf="!loading() && !error() && categories().length > 0" class="categories-grid">
+    <mat-card 
+      *ngFor="let category of categories(); let i = index" 
+      class="category-card"
+      (click)="onCategoryClick(category)">
+      
+      <div class="category-image-container">
+        <img 
+          [src]="category.image" 
+          [alt]="category.name"
+          (error)="onImageError($event)"
+          class="category-image">
+        
+        <div class="category-overlay">
+          <mat-icon>arrow_forward</mat-icon>
+        </div>
+        
+        <div class="category-badge">New</div>
+      </div>
+      
+      <mat-card-content class="category-content">
+        <h3 class="category-name">{{category.name}}</h3>
+        <p class="category-description">Explore our amazing collection of {{category.name.toLowerCase()}} products</p>
+        <button class="shop-now-btn" (click)="$event.stopPropagation(); onCategoryClick(category)">
+          Shop Now
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && !error() && categories().length === 0" class="empty-container">
+    <mat-icon class="empty-icon">category</mat-icon>
+    <h3>No Categories Found</h3>
+    <p>We're working hard to bring you amazing categories. Check back soon!</p>
+    <button mat-raised-button (click)="retry()">
+      <mat-icon>refresh</mat-icon>
+      Refresh Categories
+    </button>
+  </div>
+</div> 
