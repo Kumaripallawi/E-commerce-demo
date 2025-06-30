@@ -472,4 +472,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
     // Just close the panel
     this.showFilterPanel.set(false);
   }
+
+  clearSearch(): void {
+    this.filterForm.get('search')?.setValue('');
+  }
 } 

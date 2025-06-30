@@ -225,14 +225,20 @@
     <mat-card>
       <mat-card-content>
         <form [formGroup]="filterForm">
-          <mat-form-field appearance="outline" class="quick-search-field">
-            <mat-label>Search Products</mat-label>
-            <input matInput 
-                   formControlName="search" 
-                   placeholder="Type to search..."
+          <div class="simple-search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" 
+                   class="simple-search-input"
+                   placeholder="Search products..."
+                   formControlName="search"
                    #searchInput>
-            <mat-icon matSuffix>search</mat-icon>
-          </mat-form-field>
+            <button *ngIf="filterForm.get('search')?.value" 
+                    class="clear-search-btn"
+                    (click)="clearSearch()"
+                    type="button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
         </form>
       </mat-card-content>
     </mat-card>
